@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cave Antique — Boutique de Vins</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Playfair+Display&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Merriweather', serif;
+      background: #efe6db url('https://images.unsplash.com/photo-1591522813741-32d74a1ebd4d?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #3b2b21;
+      margin: 0;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: rgba(59, 43, 33, 0.95);
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .category {
+      padding: 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      transition: 0.25s;
+      font-weight: 600;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .category:hover {
+      transform: scale(1.03);
+    }
+
+    .category.active {
+      background: #7a1f1f;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px;
+      overflow: auto;
+      backdrop-filter: blur(6px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(251, 247, 243, 0.95);
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      cursor: pointer;
+      transition: transform .3s, box-shadow .3s;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+    }
+
+    .card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease, filter .4s ease;
+    }
+
+    .card:hover img {
+      transform: scale(1.06);
+      filter: brightness(1.05);
+    }
+
+    .card h3 {
+      margin: 12px;
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: #3b2b21;
+    }
+
+    .card .price {
+      margin: 0 12px 12px;
+      font-weight: 700;
+      color: #7a1f1f;
+      font-size: 18px;
+    }
+
+    /* detail pane (popup) */
+    .detail-pane {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 520px;
+      max-width: 92%;
+      background: #fffdfb;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45);
+      display: none;
+      z-index: 150;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(.96)
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1)
+      }
+    }
+
+    .detail-pane.show {
+      display: block;
+      animation: popIn .28s ease;
+    }
+
+    .detail-pane img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+
+    .detail-pane h2 {
+      margin: 0 0 8px;
+      font-family: 'Playfair Display', serif;
+      color: #4b1a1a;
+    }
+
+    .detail-pane p {
+      margin: 6px 0;
+      color: #3b2b21;
+    }
+
+    /* close X */
+    .close-x {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 22px;
+      color: #7a1f1f;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 6px;
+      border-radius: 8px;
+      transition: background .18s, transform .18s;
+    }
+
+    .close-x:hover {
+      background: rgba(122, 31, 31, 0.08);
+      transform: scale(1.08);
+    }
+
+    /* bottom controls */
+    .detail-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      border-top: 1px solid #eee;
+      padding-top: 14px;
+    }
+
+    .price-dynamic {
+      font-size: 20px;
+      font-weight: 800;
+      color: #7a1f1f;
+      min-width: 110px;
+    }
+
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      background: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .qty-input {
+      width: 60px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .add-cart {
+      padding: 10px 16px;
+      background: #7a1f1f;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .add-cart:hover {
+      background: #5a1414;
+    }
+
+    /* contact */
+    .contact-section {
+      margin-top: 36px;
+      padding: 18px;
+      background: rgba(247, 242, 236, 0.95);
+      border-radius: 14px;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .contact-section h2 {
+      text-align: center;
+      margin-bottom: 14px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .contact-section input,
+    .contact-section textarea {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-family: 'Merriweather', serif;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .contact-section button {
+      padding: 12px;
+      background: #7a1f1f;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* popup */
+    .popup {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #7a1f1f;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      display: none;
+      z-index: 200;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      font-weight: 700;
+    }
+
+    /* small responsive */
+    @media (max-width:640px) {
+      .sidebar {
+        display: none;
+      }
+
+      .detail-pane {
+        width: 92%;
+        padding: 14px;
+      }
+
+      .card img {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h2>Cave Antique</h2>
+      <div class="category active" data-cat="All">Tous</div>
+      <div class="category" data-cat="Rouge">Rouge</div>
+      <div class="category" data-cat="Blanc">Blanc</div>
+      <div class="category" data-cat="Rosé">Rosé</div>
+      <div class="category" data-cat="Champagne">Champagne</div>
+    </aside>
+
+    <main class="main">
+      <div class="grid" id="grid">
+        <!-- Les balises <img> sources (on les conserve dans le HTML pour référence) -->
+        <img id="img1" src="margaux-2015-limited-release.jpg" alt="Château Margaux 2015"> <!-- Château Margaux 2015 -->
+        <img id="img2" src="Romanee_Conti_DRC_2016.webp" alt="Domaine de la Romanée-Conti 2016">
+        <!-- Domaine de la Romanée-Conti 2016 -->
+        <img id="img3" src="1dcf0d09-50f9-48e5-bfd8-68e27328611e.jpg" alt="Pétrus 2014"> <!-- Pétrus 2014 -->
+        <img id="img4" src="87d13f26-6776-4664-99b7-1fe68a9bad71.jpg" alt="Château Lafite Rothschild 2013">
+        <!-- Château Lafite Rothschild 2013 -->
+        <img id="img5" src="8613e3e8-5996-42b0-ad80-02b887f8fbaa.jpg" alt="Château Latour 2012">
+        <!-- Château Latour 2012 -->
+        <img id="img6" src="chablis-grand-cru-blanchot.jpg" alt="Chablis Grand Cru 2018">
+        <!-- Chablis Grand Cru 2018 -->
+        <img id="img7" src="1036036a-149a-45f9-974f-c3518d937776.jpg" alt="Sancerre 2019"> <!-- Sancerre 2019 -->
+        <img id="img8" src="Puligny-Montrachet+Premier+Cru+“Clos+du+Cailleret”+2017,+Jeah+Chartron.webp"
+          alt="Puligny-Montrachet 2017"> <!-- Puligny-Montrachet 2017 -->
+        <img id="img9" src="meursault-les-tillets-2016-domaine-bernard-bonin.jpg" alt="Meursault 2016">
+        <!-- Meursault 2016 -->
+        <img id="img10" src="60d47834b8dfce8c3f027d73_vignelaure.jpg" alt="Rosé Provence 2020">
+        <!-- Rosé Provence 2020 -->
+        <img id="img11" src="fecc9cce18ec95f9bde6b1378e761952.jpg" alt="Côtes de Provence 2021">
+        <!-- Côtes de Provence 2021 -->
+        <img id="img12" src="MOET2012_1024x1024.webp" alt="Champagne Moët & Chandon 2012">
+        <!-- Champagne Moët & Chandon 2012 -->
+        <img id="img13" src="Veuve_Clicquot_-_bottle.jpg" alt="Veuve Clicquot 2010"> <!-- Veuve Clicquot 2010 -->
+        <img id="img14" src="30027_NM_cc.png" alt="Krug Grande Cuvée"> <!-- Krug Grande Cuvée -->
+      </div>
+
+      <div class="contact-section">
+        <h2>Contactez-nous</h2>
+        <form id="contactForm" action="https://formspree.io/f/TON_CODE_FORMSPREE" method="POST">
+          <input type="text" name="name" placeholder="Votre nom" required />
+          <input type="email" name="email" placeholder="Votre email" required />
+          <textarea name="message" rows="5" placeholder="Votre message" required></textarea>
+          <button type="submit">Envoyer</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- Panneau détail -->
+  <div class="detail-pane" id="detailPane" aria-hidden="true">
+    <span class="close-x" id="closeX" title="Fermer">&times;</span>
+    <img src="" alt="Vin" id="detailImg">
+    <h2 id="detailTitle"></h2>
+    <p id="detailYearRegion"></p>
+    <p id="detailDesc"></p>
+    <p id="detailPairing"></p>
+    <p id="detailAbvStock"></p>
+
+    <div class="detail-bottom">
+      <div class="price-dynamic" id="priceDynamic">0€</div>
+
+      <div class="qty-selector">
+        <button class="qty-btn" id="qtyMinus" type="button">−</button>
+        <input class="qty-input" type="number" id="qty" min="1" value="1" />
+        <button class="qty-btn" id="qtyPlus" type="button">+</button>
+      </div>
+
+      <button class="add-cart" id="addToCart">Ajouter au panier</button>
+    </div>
+  </div>
+
+  <div class="popup" id="popup">Ajouté au panier 🍷</div>
+
+  <script>
+    // --- récupère les éléments DOM ---
+    const grid = document.getElementById('grid');
+    const categories = document.querySelectorAll('.category');
+    const detailPane = document.getElementById('detailPane');
+    const closeX = document.getElementById('closeX');
+    const detailImg = document.getElementById('detailImg');
+    const detailTitle = document.getElementById('detailTitle');
+    const detailYearRegion = document.getElementById('detailYearRegion');
+    const detailDesc = document.getElementById('detailDesc');
+    const detailPairing = document.getElementById('detailPairing');
+    const detailAbvStock = document.getElementById('detailAbvStock');
+    const priceDynamic = document.getElementById('priceDynamic');
+    const qtyInput = document.getElementById('qty');
+    const qtyPlus = document.getElementById('qtyPlus');
+    const qtyMinus = document.getElementById('qtyMinus');
+    const addToCart = document.getElementById('addToCart');
+    const popup = document.getElementById('popup');
+    const contactForm = document.getElementById('contactForm');
+
+    // --- wines (je récupère les src depuis les <img id="imgX"> que tu as dans la page) ---
+    const wines = [
+      { id: 1, name: "Château Margaux 2015", year: "2015", region: "Bordeaux", price: 450, abv: "13%", stock: 12, pairing: "Viande rouge, fromages", desc: "Un vin rouge intense et élégant, millésime d'exception.", category: "Rouge", img: document.getElementById('img1').src },
+      { id: 2, name: "Domaine de la Romanée-Conti 2016", year: "2016", region: "Bourgogne", price: 1200, abv: "13.5%", stock: 5, pairing: "Gibier, fromages affinés", desc: "Vin légendaire, bouquet exceptionnel, robe profonde.", category: "Rouge", img: document.getElementById('img2').src },
+      { id: 3, name: "Pétrus 2014", year: "2014", region: "Pomerol", price: 980, abv: "13%", stock: 8, pairing: "Viande rouge, foie gras", desc: "Vin puissant et structuré, parfait pour collectionneur.", category: "Rouge", img: document.getElementById('img3').src },
+      { id: 4, name: "Château Lafite Rothschild 2013", year: "2013", region: "Bordeaux", price: 600, abv: "12.8%", stock: 10, pairing: "Gibier, fromages affinés", desc: "Un grand cru classique avec une finesse remarquable.", category: "Rouge", img: document.getElementById('img4').src },
+      { id: 5, name: "Château Latour 2012", year: "2012", region: "Bordeaux", price: 550, abv: "13%", stock: 9, pairing: "Viande rouge, gibier", desc: "Robe sombre, tanins soyeux, très longue finale.", category: "Rouge", img: document.getElementById('img5').src },
+
+      { id: 6, name: "Chablis Grand Cru 2018", year: "2018", region: "Bourgogne", price: 90, abv: "12.5%", stock: 20, pairing: "Poissons, fruits de mer", desc: "Vin blanc vif et minéral, parfait pour les plats de la mer.", category: "Blanc", img: document.getElementById('img6').src },
+      { id: 7, name: "Sancerre 2019", year: "2019", region: "Loire", price: 35, abv: "12%", stock: 25, pairing: "Salades, poissons", desc: "Vin blanc sec et fruité.", category: "Blanc", img: document.getElementById('img7').src },
+      { id: 8, name: "Puligny-Montrachet 2017", year: "2017", region: "Bourgogne", price: 120, abv: "13%", stock: 12, pairing: "Poissons fins, crustacés", desc: "Vin blanc élégant et complexe.", category: "Blanc", img: document.getElementById('img8').src },
+      { id: 9, name: "Meursault 2016", year: "2016", region: "Bourgogne", price: 110, abv: "13%", stock: 15, pairing: "Poissons grillés, volailles", desc: "Vin blanc riche et onctueux.", category: "Blanc", img: document.getElementById('img9').src },
+
+      { id: 10, name: "Rosé Provence 2020", year: "2020", region: "Provence", price: 25, abv: "12%", stock: 30, pairing: "Salades, grillades", desc: "Rosé léger et fruité.", category: "Rosé", img: document.getElementById('img10').src },
+      { id: 11, name: "Côtes de Provence 2021", year: "2021", region: "Provence", price: 28, abv: "12%", stock: 25, pairing: "Apéritifs, fruits de mer", desc: "Rosé frais et élégant.", category: "Rosé", img: document.getElementById('img11').src },
+
+      { id: 12, name: "Champagne Moët & Chandon 2012", year: "2012", region: "Champagne", price: 150, abv: "12%", stock: 18, pairing: "Fêtes, apéritifs", desc: "Champagne élégant et festif.", category: "Champagne", img: document.getElementById('img12').src },
+      { id: 13, name: "Veuve Clicquot 2010", year: "2010", region: "Champagne", price: 140, abv: "12%", stock: 10, pairing: "Apéritifs, desserts", desc: "Champagne riche avec notes de brioche.", category: "Champagne", img: document.getElementById('img13').src },
+      { id: 14, name: "Krug Grande Cuvée", year: "-", region: "Champagne", price: 180, abv: "12%", stock: 8, pairing: "Fêtes, poissons fins", desc: "Champagne prestigieux et complexe.", category: "Champagne", img: document.getElementById('img14').src }
+    ];
+
+    // --- helpers & state ---
+    let selectedWine = null;
+    const cart = [];
+
+    // --- grid render ---
+    function updateGrid(list = wines) {
+      grid.innerHTML = ''; // rebuild cards
+      list.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${w.img}" alt="${w.name}">
+          <h3>${w.name}</h3>
+          <div class="price">${w.price}€</div>
+        `;
+        card.addEventListener('click', () => showDetail(w));
+        grid.appendChild(card);
+      });
+    }
+
+    // --- detail popup behavior ---
+    function showDetail(w) {
+      selectedWine = w;
+      detailImg.src = w.img;
+      detailTitle.textContent = w.name;
+      detailYearRegion.textContent = `${w.year} — ${w.region}`;
+      detailDesc.textContent = w.desc || '';
+      detailPairing.textContent = w.pairing ? `Accords: ${w.pairing}` : '';
+      detailAbvStock.textContent = `Alcool: ${w.abv || ''} • Stock: ${w.stock || 0}`;
+      qtyInput.value = 1;
+      updatePriceDynamic();
+      detailPane.classList.add('show');
+      detailPane.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDetail() {
+      detailPane.classList.remove('show');
+      detailPane.setAttribute('aria-hidden', 'true');
+      selectedWine = null;
+    }
+
+    function updatePriceDynamic() {
+      if (!selectedWine) return;
+      const q = Math.max(1, parseInt(qtyInput.value || 1));
+      const total = selectedWine.price * q;
+      priceDynamic.textContent = `${total}€`;
+    }
+
+    // --- wire category filters ---
+    categories.forEach(cat => {
+      cat.addEventListener('click', () => {
+        categories.forEach(c => c.classList.remove('active'));
+        cat.classList.add('active');
+        const catName = cat.dataset.cat;
+        if (catName === 'All') updateGrid(wines);
+        else updateGrid(wines.filter(w => w.category === catName));
+      });
+    });
+
+    // --- events ---
+    closeX.addEventListener('click', closeDetail);
+
+    qtyInput.addEventListener('input', () => {
+      if (qtyInput.value === '' || parseInt(qtyInput.value) < 1) qtyInput.value = 1;
+      updatePriceDynamic();
+    });
+    qtyPlus.addEventListener('click', () => { qtyInput.value = Math.max(1, parseInt(qtyInput.value || 1)) + 1; updatePriceDynamic(); });
+    qtyMinus.addEventListener('click', () => { qtyInput.value = Math.max(1, parseInt(qtyInput.value || 1)) - 1; updatePriceDynamic(); });
+
+    addToCart.addEventListener('click', () => {
+      const q = Math.max(1, parseInt(qtyInput.value || 1));
+      if (!selectedWine) return;
+      // ajoute au panier (simple push)
+      cart.push({ wineId: selectedWine.id, qty: q, priceEach: selectedWine.price });
+      // feedback visuel
+      popup.style.display = 'block';
+      setTimeout(() => popup.style.display = 'none', 1800);
+      closeDetail();
+      console.log('Panier:', cart); // utile pour debug
+    });
+
+    // contact form (Formspree) behaviour (ne change pas ton action)
+    if (contactForm) {
+      contactForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        fetch(contactForm.action, {
+          method: 'POST',
+          body: new FormData(contactForm),
+          headers: { 'Accept': 'application/json' }
+        }).then(() => {
+          popup.textContent = 'Message envoyé !';
+          popup.style.display = 'block';
+          setTimeout(() => { popup.style.display = 'none'; popup.textContent = 'Ajouté au panier 🍷'; }, 2500);
+          contactForm.reset();
+        }).catch(err => {
+          console.error(err);
+          popup.textContent = "Erreur d'envoi.";
+          popup.style.display = 'block';
+          setTimeout(() => { popup.style.display = 'none'; popup.textContent = 'Ajouté au panier 🍷'; }, 2500);
+        });
+      });
+    }
+
+    // initial render
+    updateGrid(wines);
+  </script>
+</body>
+
+</html>
