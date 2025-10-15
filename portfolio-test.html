@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="portfoliotest.css">
+    <title>Portfolio de Nathan</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="#accueil">accueil</a>
+            <a href="#propos">À propos</a>
+            <a href="#competence">Compétences</a>
+            <a href="#projets">Projets</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <section id="accueil" class="acceuil">
+            <h1>Développeur Web Front-End</h1>
+        </section>
+    </header>
+
+    <section id="propos" class="propos">
+        <h2>À propos de moi</h2>
+        <h3>Moi c'est Nathan !</h3>
+        <p>Je suis un jeune développeur web en formation à l’IFAPME, passionné par le code, le design
+            et la création d’expériences modernes sur le web. J’aime apprendre de nouvelles technologies et
+            construire des projets qui allient esthétique et performance. Mon objectif est de devenir un
+            développeur polyvalent capable de concevoir des sites modernes, performants et adaptés aux besoins
+            de chaque utilisateur.
+        💼 Actuellement apprenti développeur web, je recherche une <strong>alternance en développement Web</strong> pour continuer à progresser dans un environnement professionnel. 
+        Mon objectif : mettre mes compétences au service d’une équipe motivée tout en apprenant chaque jour davantage.</p>
+    </section>
+
+    <section id="competence" class="comp">
+        <h2>Mes Compétences</h2>
+        <div class="skill">
+            <p>HTML</p>
+            <div class="progress">
+                <div class="progress-line html"></div>
+            </div>
+        </div>
+        <div class="skill">
+            <p>CSS</p>
+            <div class="progress">
+                <div class="progress-line css"></div>
+            </div>
+        </div>
+        <div class="skill">
+            <p>JavaScript</p>
+            <div class="progress">
+                <div class="progress-line javascript"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projets" class="projets">
+        <h2>Mes Projets</h2>
+        <div class="projets-container">
+            <div class="projet">
+                <div class="projet-image">
+                    <img src="Capture d'écran 2025-10-09 151723.png" alt="Projet personnel sur l'Islande">
+                </div>
+                <div class="projet-info">
+                    <h3>Projet Personnel</h3>
+                    <p>Mon premier projet sur mon pays de rêve.</p>
+                    <a href="https://nathan180408.github.io/projets/projets-islande.html" target="_blank">Voir le projet</a>
+                </div>
+            </div>
+
+            <div class="projet">
+                <div class="projet-image">
+                    <img src="Capture d'écran 2025-10-09 151848.png" alt="Site vitrine entreprise familiale">
+                </div>
+                <div class="projet-info">
+                    <h3>Site Vitrine</h3>
+                    <p>Un site moderne et responsive conçu pour une entreprise familiale, avec animations et design épuré.</p>
+                    <a href="https://nathan180408.github.io/projets/vente2.html" target="_blank">Voir le projet</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <section id="contact" class="cont">
+    <h2>Me contacter</h2>
+    <form action="https://formspree.io/f/movkknvo" method="POST" class="contact-form">
+        <div class="form-group">
+            <label for="name">Nom</label>
+            <input type="text" id="name" name="name" placeholder="Votre nom" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Votre email" required>
+        </div>
+        <div class="form-group">
+            <label for="subject">Sujet</label>
+            <input type="text" id="subject" name="subject" placeholder="Sujet" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Votre message..." required></textarea>
+        </div>
+        <button type="submit">Envoyer</button>
+    </form>
+</section>
+<footer>
+  <p>© 2025 Nathan Mortier — Développeur Web</p>
+</footer>
