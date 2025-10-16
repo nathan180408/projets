@@ -1,15 +1,16 @@
-/* Reset et base */
+
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f4f4;
     color: #111;
+    scroll-behavior: smooth;
 }
 
 /* Header et nav */
 header {
-    max-width: 1280px;
-    margin: auto;
+    width: 100%;
+    margin:0;
 }
 
 nav {
@@ -18,10 +19,10 @@ nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 40px;
-    position: sticky;
-    top: 0;
+    gap: 20px;
     z-index: 100;
+    position: fixed;
+    width: 100%;
 }
 
 nav a {
@@ -36,12 +37,27 @@ nav a:hover {
 }
 
 /* Accueil */
+ .container-acceuil {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    margin: 0;
+    padding: 0;
+}
+
 .acceuil {
-    background: url('web-design-2038872_1280.jpg') center/cover no-repeat;
-    display: grid;
-    place-items: center;
+    background: url('web-design-2038872_1280.jpg') center center / cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 90vh;
+    width: 90vw;  
     text-align: center;
+    border-radius: 15px; 
+    overflow: hidden;
+    position: relative;
 }
 
 .acceuil h1 {
@@ -50,6 +66,7 @@ nav a:hover {
     font-size: 48px;
     border-radius: 10px;
     color: #fff;
+    z-index: 2;
 }
 
 /* Section À propos */
@@ -92,6 +109,7 @@ nav a:hover {
 .skill {
     margin: 20px auto;
     width: 80%;
+    color: darkcyan;
 }
 
 .skill p {
@@ -109,11 +127,11 @@ nav a:hover {
 .progress-line {
     height: 100%;
     border-radius: 10px;
-    /* Supprime l'animation fill globale */
-    transition: width 2s ease; /* animation douce pour remplir la barre */
+    
+    transition: width 2s ease; 
 }
 
-/* Les pourcentages exacts */
+
 .progress-line.html { width: 95%; background-color: #df800d; }
 .progress-line.css { width: 95%; background-color: #007bff; }
 .progress-line.javascript { width: 40%; background-color: #f0db4f; }
@@ -267,9 +285,15 @@ nav a:hover {
     transform: scale(1.05);
 }
 footer {
-    background-color: white;
+    background-color:grey;
     color: #020024;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
+ 
+    
+
+
+
